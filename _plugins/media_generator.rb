@@ -13,16 +13,17 @@
 
 module Jekyll
   class MediaGenerator < Generator
-    require 'octokit'
+    #require 'octokit'
     require 'pry'
 
-    class GithubError < StandardError
-    end
+    # class GithubError < StandardError
+    # end
     safe true
 
     def generate(_site)
 
-      images 'tsokkostest','dev'
+      # images 'tsokkostest','dev'
+      binding.pry
       create_json_files media_dir
       create_json_files model_dir, 'models'
     end
@@ -82,6 +83,7 @@ module Jekyll
     def get_raw_content(repo, path, branch = 'master')
       Octokit.content(repo.include?('/') ? repo : full_repo_name(repo), path: path, ref: branch)
     end
+
 
     def self.full_repo_name(repo)
       repo = repo.to_s
