@@ -14,14 +14,15 @@
 module Jekyll
   class MediaGenerator < Generator
     require 'octokit'
+    require 'pry'
 
     class GithubError < StandardError
     end
     safe true
 
     def generate(_site)
-     binding.pry
-      images
+
+      images 'tsokkostest','dev'
       create_json_files media_dir
       create_json_files model_dir, 'models'
     end
@@ -62,7 +63,7 @@ module Jekyll
       File.expand_path(File.join(Dir.pwd, '_assets', 'image_data'))
     end
 
-    def self.images(repo, branch)
+    def images(repo ='tsokkostest', branch='dev')
       binding.pry
       images_folder = get_raw_content(repo, '_assets', branch).select { |item|
         item.name == 'images' && item.type == 'dir'
@@ -78,7 +79,7 @@ module Jekyll
       []
     end
     # returns files or dirs, content NOT decoded
-    def self.get_raw_content(repo, path, branch = 'master')
+    def get_raw_content(repo, path, branch = 'master')
       Octokit.content(repo.include?('/') ? repo : full_repo_name(repo), path: path, ref: branch)
     end
 
