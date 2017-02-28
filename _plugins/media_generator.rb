@@ -20,7 +20,7 @@ module Jekyll
     safe true
 
     def generate(_site)
-     debugger
+     binding.pry
       images
       create_json_files media_dir
       create_json_files model_dir, 'models'
