@@ -6,16 +6,6 @@ def translate_data(content, locale, default_locale)
   end
 end
 
-def assign_associations(content)
-  map_content(content) do |key, value|
-    if key.end_with?('_id') && value.is_a?(Fixnum)
-      k = key.gsub('_id', '')
-      obj = content[k + 's'].detect{|item| value == (item.kind_of?(Array) ? item.last['id'] || item.first : item['id']) }
-      [k, content[k + 's'].kind_of?(Hash) && !obj.nil? ? obj.last : obj]
-    end
-  end
-end
-
 def map_content(content, &block)
   case content
   when Hash
