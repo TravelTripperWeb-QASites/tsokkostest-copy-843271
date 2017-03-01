@@ -13,18 +13,11 @@
 
 module Jekyll
   class MediaGenerator < Generator
-    #require 'octokit'
-    require 'pry'
-
-    # class GithubError < StandardError
-    # end
     safe true
 
     def generate(_site)
-
-      # images 'tsokkostest','dev'
-      binding.pry
       create_json_files media_dir
+      create_old_media old_media_dir
       create_json_files model_dir, 'models'
     end
 
@@ -35,6 +28,15 @@ module Jekyll
       File.open(filename, 'w') do |f|
         f.write(JSON.pretty_generate(content))
       end
+    end
+
+    def create_old_media(folder)
+      return [] unless File.directory? folder
+      json = []
+      Dir[File.join(folder, "/*")].each do |file|
+        json << { :path => File.basename(file), :sha => '' }
+      end
+      save 'old_media', json
     end
 
     def create_json_files(folder, file_name = 'models')
@@ -64,34 +66,8 @@ module Jekyll
       File.expand_path(File.join(Dir.pwd, '_assets', 'image_data'))
     end
 
-    def images(repo ='tsokkostest', branch='dev')
-      binding.pry
-      images_folder = get_raw_content(repo, '_assets', branch).select { |item|
-        item.name == 'images' && item.type == 'dir'
-      }.first
-      binding.pry
-      if images_folder
-        images = folder_tree(repo, images_folder.sha).tree.select { |item| item.type == 'blob' }
-        images.map { |image| { path: image.path, sha: image.sha } }
-      else
-        return []
-      end
-    rescue Octokit::NotFound
-      []
-    end
-    # returns files or dirs, content NOT decoded
-    def get_raw_content(repo, path, branch = 'master')
-      Octokit.content(repo.include?('/') ? repo : full_repo_name(repo), path: path, ref: branch)
-    end
-
-
-    def self.full_repo_name(repo)
-      repo = repo.to_s
-      if repo.include?('/') #already in org/repo format
-        return repo
-      else
-        "#{ENV['ORGANIZATION_NAME']}#{repo}"
-      end
+    def old_media_dir
+      File.expand_path(File.join(Dir.pwd, '_assets', 'images'))
     end
   end
 end
