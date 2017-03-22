@@ -10,7 +10,7 @@ permalink_localized:
 meta_description_localized:
   en: 
 meta_keywords_localized:
-  en: 
+  en: ads
 publish_localized:
   en: 'false'
 ---
