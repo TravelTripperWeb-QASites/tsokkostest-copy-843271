@@ -35,7 +35,7 @@ class SitemapGenerator
       source_path = page.is_a?(Jekyll::DataPage) ? page.source_path : page.path
 
       sitemap[*path] ||= []
-      sitemap[*path] << { label: page.data['label'] || page.data['title'] || label, locales: localized_urls(site, page), data_source: (page.is_a?(Jekyll::DataPage) && page.data_source) || nil, source_path: source_path } unless page.data['editable'] === false
+      sitemap[*path] << { label: page.data['label'] || page.data['title'] || label, publish: page.data['publish'], locales: localized_urls(site, page), data_source: (page.is_a?(Jekyll::DataPage) && page.data_source) || nil, source_path: source_path } unless page.data['editable'] === false
     end
 
     sitemap['__REGIONS__'] = site.data['regions']
@@ -58,13 +58,13 @@ class SitemapGenerator
   end
 
   private
-    def save(sitemap)
-      File.open('sitemap.json', 'w') do |f|
-        f.write(sitemap.to_json)
-      end
+  def save(sitemap)
+    File.open('sitemap.json', 'w') do |f|
+      f.write(sitemap.to_json)
     end
+  end
 
-    def sha
-      `git rev-parse HEAD`.chomp
-    end
+  def sha
+    `git rev-parse HEAD`.chomp
+  end
 end
