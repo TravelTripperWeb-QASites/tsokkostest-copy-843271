@@ -25,7 +25,4 @@ languages: ['en']
 keep_files: ['assets']
 rsync_copy: ['_assets']
 
-    
-
-
- 
+exclude: ["hotels-in-protaras/index.html"]
