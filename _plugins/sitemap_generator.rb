@@ -1,5 +1,4 @@
 require 'xkeys'
-
 Jekyll::Hooks.register :site, :post_write do |site|
   SitemapGenerator.new(site).generate
 end
@@ -21,7 +20,7 @@ class SitemapGenerator
     sitemap['__CONFIG__', 'default_locale'] = default_lang
     sitemap['__CONFIG__', 'page_gen'] = site.config['page_gen']
     sitemap['__CONFIG__', 'locales'] = site.config['languages']
-
+    exclude_data = []
     pages.each do |page|
       url = page.url
       url += 'index.html' if url.end_with?('/')
@@ -33,9 +32,14 @@ class SitemapGenerator
       path = path[0..-2] + ['__PAGES__']
 
       source_path = page.is_a?(Jekyll::DataPage) ? page.source_path : page.path
+     #------------
 
+      if page.data['published']
+        exclude_data << source_path
+      end
+     #------------
       sitemap[*path] ||= []
-      sitemap[*path] << { label: page.data['label'] || page.data['title'] || label, publish: page.data['publish'], locales: localized_urls(site, page), data_source: (page.is_a?(Jekyll::DataPage) && page.data_source) || nil, source_path: source_path } unless page.data['editable'] === false
+      sitemap[*path] << { label: page.data['label'] || page.data['title'] || label, published: page.data['published'], locales: localized_urls(site, page), data_source: (page.is_a?(Jekyll::DataPage) && page.data_source) || nil, source_path: source_path } unless page.data['editable'] === false
     end
 
     sitemap['__REGIONS__'] = site.data['regions']
@@ -47,7 +51,6 @@ class SitemapGenerator
     else
       sitemap['__SHA__'] = sha
     end
-
     save sitemap
   end
 
