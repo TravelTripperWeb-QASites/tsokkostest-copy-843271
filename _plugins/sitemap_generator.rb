@@ -1,5 +1,5 @@
 require 'xkeys'
-require 'pry'
+
 Jekyll::Hooks.register :site, :post_write do |site|
   SitemapGenerator.new(site).generate
 end
@@ -77,7 +77,6 @@ class SitemapGenerator
   end
 
   def save_config(data)
-binding.pry
     # lines = File.readlines('_config.yml')
 a =    File.read('_config.yml').include?("exclude:")
 if a == false
@@ -87,13 +86,11 @@ if a == false
     f.write("exclude: #{data}\n")
   end
 end
-binding.pry
     File.open('_config.yml', 'r+') do |file|
       file.each_line do |line|
         # puts i+=1
 
         if (line=~/exclude:/)
-          binding.pry
           file.seek(-line.length+2, IO::SEEK_CUR)
 
           # lines[i-1] = "exclude: #{data}"
