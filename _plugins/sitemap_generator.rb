@@ -33,7 +33,9 @@ class SitemapGenerator
       path = path[0..-2] + ['__PAGES__']
 
       source_path = page.is_a?(Jekyll::DataPage) ? page.source_path : page.path
-      exclude_data << source_path if page.data['published'] =='false'
+       if page.data['published'] =='false'
+         exclude_data << source_path
+      end
       sitemap[*path] ||= []
       sitemap[*path] << { label: page.data['label'] || page.data['title'] || label, published: page.data['published'], locales: localized_urls(site, page), data_source: (page.is_a?(Jekyll::DataPage) && page.data_source) || nil, source_path: source_path } unless page.data['editable'] === false
     end
@@ -47,9 +49,16 @@ class SitemapGenerator
     else
       sitemap['__SHA__'] = sha
     end
-    config_data = hash = YAML.load(File.read("_config.yml"))
-    config_data["exclude"] = exclude_data unless exclude_data.empty?
-    save_config config_data["exclude"]
+    config_data =  YAML.load(File.read("_config.yml"))
+     if exclude_data.any?
+       if  exclude_data != config_data["exclude"]
+       config_data["exclude"] = exclude_data
+       save_config config_data["exclude"]
+       end
+     else
+       config_data["exclude"] = []
+       save_config config_data["exclude"]
+    end
     save sitemap
   end
 
@@ -68,13 +77,34 @@ class SitemapGenerator
   end
 
   def save_config(data)
+binding.pry
+    # lines = File.readlines('_config.yml')
+a =    File.read('_config.yml').include?("exclude:")
+if a == false
+  File.open('_config.yml', 'r+') do |f|
+    # go back 2 from the end, to overwrite 1 character and the final \n
+    f.seek(0, IO::SEEK_END)
+    f.write("exclude: #{data}\n")
+  end
+end
+binding.pry
     File.open('_config.yml', 'r+') do |file|
       file.each_line do |line|
-        if (line=~/exclude/)
-          file.seek(-line.length, IO::SEEK_CUR)
+        # puts i+=1
+
+        if (line=~/exclude:/)
+          binding.pry
+          file.seek(-line.length+2, IO::SEEK_CUR)
+
+          # lines[i-1] = "exclude: #{data}"
+          # file.seek(-line.length-0, IO::SEEK_CUR)
+          # file.seek(-line.length, IO::SEEK_CUR)
           file.write "exclude: #{data}"
+          # file.write(lines.join)
           return
         end
+
+
       end
     end
   end
