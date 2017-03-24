@@ -25,4 +25,5 @@ languages: ['en']
 keep_files: ['assets']
 rsync_copy: ['_assets']
 
-exclude: ["hotels-in-paphos","hotels-in-protaras","hotels-in-ayianapa"]
+
+exclude: ["index.html"]
